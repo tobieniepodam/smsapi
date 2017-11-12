@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+#
+# Copyright 2017 tobieniepodam@gmail.com
+
+pgname=$(basename "$0")
+pgd=$(dirname "$0")
+
+
+function error_exit() {
+    echo -e "$pgname error: $1" >&2;
+    exit 1;
+}
+
+#just in case
+test "`whoami`" = 'root' || error_exit 'root only!'
+
+group=
+while getopts ":g:h" opt; do
+    case $opt in
+        g)  group="$OPTARG";;
+        h)  echo "Usage: $pgname -g 'group'"; exit 0;;
+        \?) error_exit "invalid option -$OPTARG!";;
+        :)  error_exit "option -$OPTARG require value!";;
+    esac
+done
+test -z "$group" && error_exit 'program require -g parametr'
+grep "^${group}:" /etc/group > /dev/null || error_exit "group '$group' doesn't exist! Did You forgot to do groupadd [-r] $group?"
+
+chown root:${group} /usr/bin/smsapi /etc/smsapi.conf

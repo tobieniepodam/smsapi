@@ -5,13 +5,12 @@ This is the simple bash software to send sms's trought [**smsapi.pl**](https://w
 **make install** - put requred files into Your system.  
 **make uninstall** - remove program from Your system.  
 
-Tips:
-- to change 'root' dir, export **DESTDIR=/somewhere/else/**..
-- to change program user group, export **GROUP=groupname**, eport empty variable disable managing user group
+Tip: to change 'root' dir, export **DESTDIR=/somewhere/else/**..
 
 ### How to use
 Install.  
 Edit smsapi.conf - set Your username and password from [**smsapi.pl**](https://www.smsapi.pl/).  
+Gain (or not) acces to other users by smsapi-regroup -g group.  
 
 **Usage: smsapi [-t "to/phone" -m "message" | -h]**  
 -t to/phone number  

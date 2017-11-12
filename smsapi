@@ -56,7 +56,7 @@ while getopts ":t:m:h" opt; do
         :)  error_exit "option -$OPTARG require value!";;
     esac
 done
-test -z "$to" && error_exit '"program require -t parametr'
+test -z "$to" && error_exit 'program require -t parametr'
 test -z "$message" && error_exit 'program require -m parametr'
 
 message=$(replace_unicode "$message")
