@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+#
+# Copyright 2017 tobieniepodam@gmail.com
+
+pgname=$(basename "$0")
+pgd=$(dirname "$0")
+
+
+function error_exit() {
+    echo -e "$pgname error: $1" >&2;
+    exit 1;
+}
+
+replace_unicode(){
+    txt=$1
+    txt=${txt//ę/e}
+    txt=${txt//ó/o}
+    txt=${txt//ą/a}
+    txt=${txt//ś/s}
+    txt=${txt//ł/l}
+    txt=${txt//ż/z}
+    txt=${txt//ź/z}
+    txt=${txt//ć/c}
+    txt=${txt//ń/n}
+    txt=${txt//Ę/E}
+    txt=${txt//Ó/O}
+    txt=${txt//Ą/A}
+    txt=${txt//Ś/S}
+    txt=${txt//Ł/L}
+    txt=${txt//Ż/Z}
+    txt=${txt//Ź/Z}
+    txt=${txt//Ć/C}
+    txt=${txt//Ń/N}
+    echo -ne "$txt" | tr -c '[:print:]' '_'
+}
+
+test -f '/etc/smsapi.conf' || error_exit 'smsapi.conf not found!';
+. /etc/smsapi.conf
+
+to=
+message=
+while getopts ":t:m:h" opt; do
+    case $opt in
+        t)  to="$OPTARG";;
+        m)  message="$OPTARG";;
+        h)  echo "Usage: $pgname -t 'to/phone' -m 'message to send'"; exit 0;;
+        \?) error_exit "invalid option -$OPTARG!";;
+        :)  error_exit "option -$OPTARG require value!";;
+    esac
+done
+test -z "$to" && error_exit '"program require -t parametr'
+test -z "$message" && error_exit 'program require -m parametr'
+
+message=$(replace_unicode "$message")
+
+result=$(curl --silent --request POST "$url" \
+    --data-urlencode "username=$username" \
+    --data-urlencode "password=$password" \
+    --data-urlencode "from=$from" \
+    --data-urlencode "to=$to" \
+    --data-urlencode "skip_foreign=1" \
+    --data-urlencode "nounicode=1" \
+    --data-urlencode "encoding=utf8" \
+    --data-urlencode "message=$message" \
+    2>&1)
+
+test ! "$?" = '0' -o ! "${result:0:2}" = 'OK' && error_exit "$result"
+echo "Your message was sent successfully, bye!"
