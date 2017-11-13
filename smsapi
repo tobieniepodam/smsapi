@@ -39,7 +39,7 @@ replace_unicode(){
     txt=${txt//Ź/Z}
     txt=${txt//Ć/C}
     txt=${txt//Ń/N}
-    echo -ne "$txt" | tr -c '[:print:]' '_'
+    echo -ne "$txt" | tr -c '\n[:print:]' '_'
 }
 
 test -f '/etc/smsapi.conf' || error_exit 'smsapi.conf not found!';

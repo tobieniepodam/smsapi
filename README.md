@@ -1,5 +1,5 @@
 # smsapi
-This is the simple bash software to send sms's trought [**smsapi.pl**](https://www.smsapi.pl/).
+This is the simple bash software to send sms's trough [**smsapi.pl**](https://www.smsapi.pl/).
 
 ### Install/uninstall
 **make install** - put requred files into Your system.  
